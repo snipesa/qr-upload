@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: QR Upload assets (S3 + DynamoDB)
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+    Description: Environment name
+
+  ProjectName:
+    Type: String
+    Default: qr-upload
+    Description: Project name for resource naming
+
+  UploadEventLambdaArn:
+    Type: String
+    Default: ""
+    Description: Optional Lambda ARN for S3 ObjectCreated notifications
+
+Conditions:
+  HasUploadEventLambdaArn: !Not [!Equals [!Ref UploadEventLambdaArn, ""]]
+
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${ProjectName}-website-${Environment}"
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - "*"
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedHeaders:
+              - "*"
+            MaxAge: 3600
+
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${WebsiteBucket.Arn}/*"
+
+  UploadsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${ProjectName}-uploads-${Environment}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - "*"
+            AllowedMethods:
+              - PUT
+              - POST
+            AllowedHeaders:
+              - "*"
+            MaxAge: 3600
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldUploads
+            Status: Enabled
+            ExpirationInDays: 30
+      NotificationConfiguration: !If
+        - HasUploadEventLambdaArn
+        - LambdaConfigurations:
+            - Event: s3:ObjectCreated:*
+              Function: !Ref UploadEventLambdaArn
+              Filter:
+                S3Key:
+                  Rules:
+                    - Name: prefix
+                      Value: session-uploads/
+        - !Ref AWS::NoValue
+
+  UploadsBucketInvokePermission:
+    Type: AWS::Lambda::Permission
+    Condition: HasUploadEventLambdaArn
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref UploadEventLambdaArn
+      Principal: s3.amazonaws.com
+      SourceArn: !GetAtt UploadsBucket.Arn
+
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${ProjectName}-sessions-${Environment}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sessionId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sessionId
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+Outputs:
+  WebsiteBucketName:
+    Description: Website hosting bucket name
+    Value: !Ref WebsiteBucket
+
+  WebsiteUrl:
+    Description: Website URL
+    Value: !Sub "http://${WebsiteBucket}.s3-website-${AWS::Region}.amazonaws.com"
+
+  UploadsBucketName:
+    Description: Uploads bucket name
+    Value: !Ref UploadsBucket
+
+  SessionsTableName:
+    Description: DynamoDB sessions table name
+    Value: !Ref SessionsTable

@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Main stack for QR Upload (nested stacks)
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+    Description: Environment name
+
+  ProjectName:
+    Type: String
+    Default: qr-upload
+    Description: Project name for resource naming
+
+Resources:
+  InfraAssetsStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: nested/qr-infra-assets.yaml
+      Parameters:
+        Environment: !Ref Environment
+        ProjectName: !Ref ProjectName
+
+  # Lambda stacks will be added later as a second nested stack.
+
+Outputs:
+  WebsiteBucketName:
+    Description: Website hosting bucket name
+    Value: !GetAtt InfraAssetsStack.Outputs.WebsiteBucketName
+
+  WebsiteUrl:
+    Description: Website URL
+    Value: !GetAtt InfraAssetsStack.Outputs.WebsiteUrl
+
+  UploadsBucketName:
+    Description: Uploads bucket name
+    Value: !GetAtt InfraAssetsStack.Outputs.UploadsBucketName
+
+  SessionsTableName:
+    Description: DynamoDB sessions table name
+    Value: !GetAtt InfraAssetsStack.Outputs.SessionsTableName
