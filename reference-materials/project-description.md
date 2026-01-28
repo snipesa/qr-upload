@@ -58,11 +58,11 @@ user-uploads-bucket/
 
 ---
 
-### 3.2 Amazon API Gateway (REST API)
+### 3.2 Amazon API Gateway (HTTP API)
 
 Used for **short-lived, request-response operations**.
 
-REST Endpoints:
+HTTP API Endpoints:
 
 * `POST /sessions`
 
@@ -72,7 +72,7 @@ REST Endpoints:
   * Validates session
   * Returns a presigned S3 upload URL
 
-REST is used when:
+HTTP API is used when:
 
 * The client initiates an action
 * An immediate response is expected
@@ -104,9 +104,9 @@ The architecture uses **two to three Lambda functions maximum**, each with clear
 
 ---
 
-#### Lambda Group 1: REST API Lambda
+#### Lambda Group 1: HTTP API Lambda
 
-This Lambda is integrated with **API Gateway (REST)** and contains multiple handlers internally.
+This Lambda is integrated with **API Gateway (HTTP API)** and contains multiple handlers internally.
 
 Handlers:
 
@@ -127,7 +127,7 @@ Routing inside the Lambda is based on:
 * HTTP method
 * Resource path
 
-This keeps REST logic centralized while maintaining separation of concerns at the code level.
+This keeps HTTP API logic centralized while maintaining separation of concerns at the code level.
 
 ---
 
@@ -206,9 +206,9 @@ Features used:
 
 ---
 
-### Step 2: User Clicks Upload (REST)
+### Step 2: User Clicks Upload (HTTP API)
 
-**Browser → REST API**
+**Browser → HTTP API**
 
 ```
 POST /sessions
@@ -228,7 +228,7 @@ POST /sessions
 
 ---
 
-### Step 3: Phone Scans QR Code (REST)
+### Step 3: Phone Scans QR Code (HTTP API)
 
 QR code resolves to:
 
@@ -287,13 +287,13 @@ GET /upload-url?sessionId=<sessionId>
 
 ---
 
-## 5. REST vs WebSocket Usage Summary
+## 5. HTTP API vs WebSocket Usage Summary
 
 | Use Case                     | Technology |
 | ---------------------------- | ---------- |
-| Client initiates action      | REST API   |
-| Generate session             | REST API   |
-| Generate presigned URL       | REST API   |
+| Client initiates action      | HTTP API   |
+| Generate session             | HTTP API   |
+| Generate presigned URL       | HTTP API   |
 | Upload image                 | Direct S3  |
 | Notify browser of completion | WebSocket  |
 | Real-time updates            | WebSocket  |
@@ -309,7 +309,7 @@ GET /upload-url?sessionId=<sessionId>
   * Limited to specific object keys
 * DynamoDB TTL cleans up old sessions
 * IAM policies scoped per Lambda
-* Validate sessionId on every REST call
+* Validate sessionId on every HTTP API call
 
 ---
 
@@ -317,9 +317,9 @@ GET /upload-url?sessionId=<sessionId>
 
 1. Static site hosting in S3
 2. DynamoDB session table
-3. REST API – create session
+3. HTTP API – create session
 4. QR code generation in frontend
-5. REST API – presigned upload URL
+5. HTTP API – presigned upload URL
 6. S3 direct upload validation
 7. WebSocket API setup
 8. S3 event → Lambda → WebSocket notification
@@ -339,4 +339,4 @@ GET /upload-url?sessionId=<sessionId>
 
 ## 9. One-Sentence Mental Model
 
-**REST starts the process, S3 does the heavy lifting, and WebSockets finish the story.**
+**HTTP API starts the process, S3 does the heavy lifting, and WebSockets finish the story.**
