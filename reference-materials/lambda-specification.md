@@ -11,10 +11,10 @@ Two Python Lambda functions handling HTTP API requests, WebSocket lifecycle, and
 ## File Structure
 ```
 lambda/
-├── requirements.txt
 ├── http_api_handler/
 │   ├── __init__.py
 │   ├── lambda_function.py
+│   ├── requirements.txt
 │   ├── handlers/
 │   │   ├── __init__.py
 │   │   ├── create_session.py
@@ -26,6 +26,7 @@ lambda/
 ├── websocket_event_handler/
 │   ├── __init__.py
 │   ├── lambda_function.py
+│   ├── requirements.txt
 │   ├── handlers/
 │   │   ├── __init__.py
 │   │   ├── websocket_connect.py
@@ -36,10 +37,6 @@ lambda/
 │       ├── dynamodb.py
 │       ├── websocket.py
 │       └── response.py
-└── shared/
-    ├── __init__.py
-    ├── constants.py
-    └── validators.py
 ```
 
 ---
@@ -500,62 +497,21 @@ def get_session_by_connection_id(connection_id):
 
 ---
 
-## Shared Utilities
-
-### shared/constants.py
-
-```python
-SESSION_STATUS = {
-    'AWAITING_SCAN': 'AWAITING_SCAN',
-    'UPLOAD_REQUESTED': 'UPLOAD_REQUESTED',
-    'COMPLETED': 'COMPLETED'
-}
-
-SESSION_EXPIRY_MINUTES = 30
-PRESIGNED_URL_EXPIRY_SECONDS = 300
-
-WEBSOCKET_ACTIONS = {
-    'UPLOAD_COMPLETED': 'UPLOAD_COMPLETED',
-    'ERROR': 'ERROR'
-}
-```
-
-### shared/validators.py
-
-```python
-import uuid
-
-def validate_session_id(session_id):
-    """Validate UUID format"""
-    if not session_id:
-        return False, 'sessionId is required'
-    
-    try:
-        uuid.UUID(session_id)
-        return True, None
-    except ValueError:
-        return False, 'Invalid sessionId format'
-
-def validate_session(session):
-    """Validate session state"""
-    if not session:
-        return False, 'Session not found'
-    
-    if int(time.time()) > session.get('expiresAt', 0):
-        return False, 'Session expired'
-    
-    return True, None
-```
-
----
-
 ## Dependencies: requirements.txt
 
+Each Lambda has its own `requirements.txt` to keep dependencies isolated.
+
+Example (HTTP API handler):
 ```txt
 boto3>=1.26.0
 ```
 
-**Note**: boto3 is included in Lambda runtime, but specify version for local testing
+Example (WebSocket/Event handler):
+```txt
+boto3>=1.26.0
+```
+
+**Note**: boto3 is included in the Lambda runtime, but specifying a version helps local testing.
 
 ---
 
@@ -568,10 +524,8 @@ boto3>=1.26.0
 python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies
-pip install -r requirements.txt -t package/
-
 # Package HTTP API handler
+pip install -r http_api_handler/requirements.txt -t package/
 cd package
 zip -r ../http_api_handler.zip .
 cd ..
@@ -580,17 +534,14 @@ zip -r ../http_api_handler.zip . -x "*.pyc" -x "*__pycache__*"
 cd ..
 
 # Package WebSocket/Event handler
+rm -rf package/*
+pip install -r websocket_event_handler/requirements.txt -t package/
 cd package
 zip -r ../websocket_event_handler.zip .
 cd ..
 cd websocket_event_handler
 zip -r ../websocket_event_handler.zip . -x "*.pyc" -x "*__pycache__*"
 cd ..
-
-# Add shared utilities to both
-cd shared
-zip -r ../http_api_handler.zip . -x "*.pyc" -x "*__pycache__*"
-zip -r ../websocket_event_handler.zip . -x "*.pyc" -x "*__pycache__*"
 ```
 
 ---
@@ -655,7 +606,6 @@ print(response)
 4. **Validation**:
    - Validate all inputs before processing
    - Return clear error messages
-   - Use shared validators for consistency
 
 ---
 
