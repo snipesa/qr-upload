@@ -353,7 +353,7 @@ Final documentation and deployment guides
 
 ## Architecture Diagram
 
-```
+
 ┌─────────────┐
 │   Browser   │
 │  (Web App)  │
@@ -390,7 +390,7 @@ Final documentation and deployment guides
   │  Phone   │
   │(Scanner) │
   └──────────┘
-```
+
 
 ---
 
