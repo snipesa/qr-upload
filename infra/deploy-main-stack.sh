@@ -19,7 +19,6 @@ aws s3 sync "$NESTED_DIR/" "s3://$S3_BUCKET/$S3_PREFIX/" \
   --exclude "*" \
   --include "*.yaml" \
   --include "*.yml" \
-  --acl public-read \
   --delete
 
 echo "Nested templates synced successfully."
@@ -27,6 +26,7 @@ echo "Nested templates synced successfully."
 aws cloudformation deploy \
   --template-file qr-upload-stack.yaml \
   --stack-name "$STACK_NAME" \
+  --capabilities CAPABILITY_NAMED_IAM \
   --parameter-overrides Environment="$ENVIRONMENT" ProjectName="$PROJECT_NAME"
 
 echo "Deployed stack: $STACK_NAME"

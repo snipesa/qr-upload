@@ -119,6 +119,86 @@ Resources:
         AttributeName: expiresAt
         Enabled: true
 
+  # IAM Role for HTTP API Lambda
+  HttpApiLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-http-api-role-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                Resource: !GetAtt SessionsTable.Arn
+        - PolicyName: S3PresignedUrlAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                Resource: !Sub "${UploadsBucket.Arn}/*"
+
+  # IAM Role for WebSocket/Event Lambda
+  WebSocketEventLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-websocket-event-role-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Scan
+                Resource: !GetAtt SessionsTable.Arn
+        - PolicyName: WebSocketAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - execute-api:ManageConnections
+                  - execute-api:Invoke
+                Resource: "*"
+        - PolicyName: S3ReadAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub "${UploadsBucket.Arn}/*"
+
 Outputs:
   WebsiteBucketName:
     Description: Website hosting bucket name
@@ -135,3 +215,11 @@ Outputs:
   SessionsTableName:
     Description: DynamoDB sessions table name
     Value: !Ref SessionsTable
+
+  HttpApiLambdaRoleArn:
+    Description: ARN of HTTP API Lambda execution role
+    Value: !GetAtt HttpApiLambdaRole.Arn
+
+  WebSocketEventLambdaRoleArn:
+    Description: ARN of WebSocket/Event Lambda execution role
+    Value: !GetAtt WebSocketEventLambdaRole.Arn

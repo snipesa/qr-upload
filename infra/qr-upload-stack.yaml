@@ -14,6 +14,11 @@ Parameters:
     Default: qr-upload
     Description: Project name for resource naming
 
+  LambdaCodeBucket:
+    Type: String
+    Default: cf-templates--1tlzie64y9rw-us-east-1
+    Description: S3 bucket containing Lambda deployment packages
+
 Resources:
   InfraAssetsStack:
     Type: AWS::CloudFormation::Stack
@@ -23,7 +28,18 @@ Resources:
         Environment: !Ref Environment
         ProjectName: !Ref ProjectName
 
-  # Lambda stacks will be added later as a second nested stack.
+  HttpApiLambdaStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: InfraAssetsStack
+    Properties:
+      TemplateURL: https://cf-templates--1tlzie64y9rw-us-east-1.s3.us-east-1.amazonaws.com/qr-upload/qr-lambda-http-api.yaml
+      Parameters:
+        Environment: !Ref Environment
+        ProjectName: !Ref ProjectName
+        HttpApiLambdaRoleArn: !GetAtt InfraAssetsStack.Outputs.HttpApiLambdaRoleArn
+        SessionsTableName: !GetAtt InfraAssetsStack.Outputs.SessionsTableName
+        UploadsBucketName: !GetAtt InfraAssetsStack.Outputs.UploadsBucketName
+        LambdaCodeBucket: !Ref LambdaCodeBucket
 
 Outputs:
   WebsiteBucketName:
@@ -41,3 +57,19 @@ Outputs:
   SessionsTableName:
     Description: DynamoDB sessions table name
     Value: !GetAtt InfraAssetsStack.Outputs.SessionsTableName
+
+  HttpApiLambdaRoleArn:
+    Description: ARN of HTTP API Lambda execution role
+    Value: !GetAtt InfraAssetsStack.Outputs.HttpApiLambdaRoleArn
+
+  WebSocketEventLambdaRoleArn:
+    Description: ARN of WebSocket/Event Lambda execution role
+    Value: !GetAtt InfraAssetsStack.Outputs.WebSocketEventLambdaRoleArn
+
+  HttpApiLambdaFunctionArn:
+    Description: ARN of the HTTP API Lambda function
+    Value: !GetAtt HttpApiLambdaStack.Outputs.HttpApiLambdaFunctionArn
+
+  HttpApiLambdaFunctionName:
+    Description: Name of the HTTP API Lambda function
+    Value: !GetAtt HttpApiLambdaStack.Outputs.HttpApiLambdaFunctionName

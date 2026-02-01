@@ -1,7 +1,8 @@
 # QR Upload Deploy Commands
 
-Main stack (dev):
+## Infrastructure Deployment
 
+### 1. Deploy Main Infrastructure (S3, DynamoDB, IAM Roles)
 ```bash
 cd infra
 ./deploy-main-stack.sh

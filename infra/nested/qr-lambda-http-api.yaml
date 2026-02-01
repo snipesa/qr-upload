@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: QR Upload HTTP API Lambda Function
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+    Description: Environment name
+
+  ProjectName:
+    Type: String
+    Default: qr-upload
+    Description: Project name for resource naming
+
+  HttpApiLambdaRoleArn:
+    Type: String
+    Description: ARN of the HTTP API Lambda execution role
+
+  SessionsTableName:
+    Type: String
+    Description: Name of the DynamoDB sessions table
+
+  UploadsBucketName:
+    Type: String
+    Description: Name of the uploads S3 bucket
+
+  LambdaCodeBucket:
+    Type: String
+    Description: S3 bucket containing Lambda deployment package
+
+  LambdaCodeKey:
+    Type: String
+    Default: lambda/http-api-handler.zip
+    Description: S3 key for Lambda deployment package
+
+Resources:
+  HttpApiLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-http-api-${Environment}"
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !Ref HttpApiLambdaRoleArn
+      Timeout: 30
+      MemorySize: 256
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaCodeKey
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: !Ref SessionsTableName
+          UPLOAD_BUCKET_NAME: !Ref UploadsBucketName
+      Description: HTTP API handler for QR upload sessions and presigned URLs
+
+  HttpApiLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${HttpApiLambdaFunction}"
+      RetentionInDays: 7
+
+Outputs:
+  HttpApiLambdaFunctionArn:
+    Description: ARN of the HTTP API Lambda function
+    Value: !GetAtt HttpApiLambdaFunction.Arn
+
+  HttpApiLambdaFunctionName:
+    Description: Name of the HTTP API Lambda function
+    Value: !Ref HttpApiLambdaFunction

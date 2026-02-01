@@ -33,14 +33,14 @@ A serverless QR-based image upload application built on AWS. Users scan a QR cod
 **So that** users can access the web application
 
 **Acceptance Criteria:**
-- [ ] Bucket name: `qr-upload-website-{environment}`
-- [ ] Static website hosting enabled
-- [ ] Index document: `index.html`
-- [ ] Error document: `index.html`
-- [ ] Public read access enabled via bucket policy
-- [ ] CORS configured for API calls
-- [ ] CloudFormation template created in `infra/cloudformation/template.yaml`
-- [ ] Outputs include website URL
+- [x] Bucket name: `qr-upload-website-{environment}`
+- [x] Static website hosting enabled
+- [x] Index document: `index.html`
+- [x] Error document: `index.html`
+- [x] Public read access enabled via bucket policy
+- [x] CORS configured for API calls
+- [x] CloudFormation template created in `infra/cloudformation/template.yaml`
+- [x] Outputs include website URL
 
 **Documentation:**
 See [infrastructure-specification.md](./infrastructure-specification.md) - Section 1: Website S3 Bucket
@@ -59,13 +59,13 @@ See [infrastructure-specification.md](./infrastructure-specification.md) - Secti
 **So that** images can be uploaded directly from phones using presigned URLs
 
 **Acceptance Criteria:**
-- [ ] Bucket name: `qr-upload-uploads-{environment}`
-- [ ] Public access blocked (private bucket)
-- [ ] CORS configured for presigned URL uploads (PUT method)
-- [ ] Lifecycle policy: Delete objects after 30 days
-- [ ] Event notification configured to trigger Lambda on object creation
-- [ ] CloudFormation template updated
-- [ ] Prefix pattern: `session-uploads/{sessionId}/`
+- [x] Bucket name: `qr-upload-uploads-{environment}`
+- [x] Public access blocked (private bucket)
+- [x] CORS configured for presigned URL uploads (PUT method)
+- [x] Lifecycle policy: Delete objects after 30 days
+- [x] Event notification configured to trigger Lambda on object creation
+- [x] CloudFormation template updated
+- [x] Prefix pattern: `session-uploads/{sessionId}/`
 
 **Documentation:**
 See [infrastructure-specification.md](./infrastructure-specification.md) - Section 2: Upload S3 Bucket
@@ -84,13 +84,13 @@ See [infrastructure-specification.md](./infrastructure-specification.md) - Secti
 **So that** the system can track session lifecycle and WebSocket connections
 
 **Acceptance Criteria:**
-- [ ] Table name: `qr-upload-sessions-{environment}`
-- [ ] Primary key: `sessionId` (String)
-- [ ] Attributes: `connectionId`, `status`, `uploadUrl`, `createdAt`, `expiresAt`
-- [ ] TTL enabled on `expiresAt` attribute (1-hour expiration)
-- [ ] Billing mode: PAY_PER_REQUEST
-- [ ] CloudFormation template updated
-- [ ] Global Secondary Index (optional): `connectionId` for WebSocket lookups
+- [x] Table name: `qr-upload-sessions-{environment}`
+- [x] Primary key: `sessionId` (String)
+- [x] Attributes: `connectionId`, `status`, `uploadUrl`, `createdAt`, `expiresAt`
+- [x] TTL enabled on `expiresAt` attribute (1-hour expiration)
+- [x] Billing mode: PAY_PER_REQUEST
+- [x] CloudFormation template updated
+- [x] Global Secondary Index (optional): `connectionId` for WebSocket lookups
 
 **Documentation:**
 See [infrastructure-specification.md](./infrastructure-specification.md) - Section 3: DynamoDB Table
@@ -109,16 +109,17 @@ See [infrastructure-specification.md](./infrastructure-specification.md) - Secti
 **So that** functions have only the permissions they need
 
 **Acceptance Criteria:**
-- [ ] HTTP API Lambda role with permissions:
-  - `dynamodb:GetItem`, `PutItem`, `UpdateItem` on sessions table
-  - `s3:PutObject` on upload bucket (for presigned URL generation)
-  - CloudWatch Logs write access
-- [ ] WebSocket/Event Lambda role with permissions:
-  - `dynamodb:GetItem`, `UpdateItem`, `Query` on sessions table
+- [x] HTTP API Lambda role with permissions:
+  - `dynamodb:GetItem`, `PutItem`, `UpdateItem`, `Query` on sessions table
+  - `s3:PutObject`, `PutObjectAcl` on upload bucket (for presigned URL generation)
+  - CloudWatch Logs write access (via AWSLambdaBasicExecutionRole)
+- [x] WebSocket/Event Lambda role with permissions:
+  - `dynamodb:GetItem`, `UpdateItem`, `Scan` on sessions table
   - `execute-api:ManageConnections` for WebSocket API
-  - CloudWatch Logs write access
-- [ ] Roles follow naming convention: `qr-upload-{function-type}-role-{environment}`
-- [ ] CloudFormation template updated
+  - `s3:GetObject` on upload bucket
+  - CloudWatch Logs write access (via AWSLambdaBasicExecutionRole)
+- [x] Roles follow naming convention: `qr-upload-{function-type}-role-{environment}`
+- [x] CloudFormation template updated
 
 **Documentation:**
 See [infrastructure-specification.md](./infrastructure-specification.md) - Section 4: IAM Roles
@@ -136,19 +137,19 @@ See [infrastructure-specification.md](./infrastructure-specification.md) - Secti
 **So that** infrastructure can be deployed consistently across environments
 
 **Acceptance Criteria:**
-- [ ] Script: `infra/cloudformation/deploy-stack.sh`
-- [ ] Accepts environment parameter (dev/prod)
-- [ ] Creates/updates CloudFormation stack
-- [ ] Validates template before deployment
-- [ ] Displays stack outputs after deployment
-- [ ] Error handling for failed deployments
-- [ ] Usage: `./deploy-stack.sh dev`
+- [x] Script: `infra/cloudformation/deploy-stack.sh`
+- [x] Accepts environment parameter (dev/prod)
+- [x] Creates/updates CloudFormation stack
+- [x] Validates template before deployment
+- [x] Displays stack outputs after deployment
+- [x] Error handling for failed deployments
+- [x] Usage: `./deploy-main-stack.sh dev`
 
 **Technical Notes:**
 ```bash
 #!/bin/bash
 ENVIRONMENT=$1
-STACK_NAME="qr-upload-stack-${ENVIRONMENT}"
+STACK_NAME="qr-upload-${ENVIRONMENT}"
 aws cloudformation deploy \
   --template-file template.yaml \
   --stack-name $STACK_NAME \
