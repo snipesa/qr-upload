@@ -18,7 +18,7 @@ Resources:
   InfraAssetsStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: nested/qr-infra-assets.yaml
+      TemplateURL: https://cf-templates--1tlzie64y9rw-us-east-1.s3.us-east-1.amazonaws.com/qr-upload/qr-infra-assets.yaml
       Parameters:
         Environment: !Ref Environment
         ProjectName: !Ref ProjectName
