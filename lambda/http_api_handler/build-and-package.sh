@@ -50,3 +50,5 @@ rm -rf "$BUILD_DIR"
 
 echo "✓ Deployment package created: ${ZIP_FILENAME}"
 echo "Size: $(ls -lh "${ZIP_FILENAME}" | awk '{print $5}')"
+rm -f "${ZIP_FILENAME}"
+echo "Removed local package: ${ZIP_FILENAME}"

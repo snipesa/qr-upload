@@ -80,7 +80,7 @@ configure_environment() {
 
   DEPLOY_TS="$(date -u +%Y-%m-%d_%H%M%S)"
   DEPLOY_PREFIX="${S3_PREFIX}/${DEPLOY_TS}"
-  DEPLOY_TEMPLATE="packaged-qr-upload-stack.yaml"
+  DEPLOY_TEMPLATE="packaged-template.yaml"
 
   echo "Configured for environment: $AWS_ENV"
   echo "Stack name: $STACK_NAME"
