@@ -30,10 +30,10 @@ Parameters:
     Type: String
     Description: S3 bucket containing Lambda deployment package
 
-  LambdaCodeKey:
-    Type: String
-    Default: lambda/http-api-handler.zip
-    Description: S3 key for Lambda deployment package
+  LambdaZipFile:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /qr-upload/http-api-handler/lambda-zip
+    Description: SSM parameter name containing Lambda zip file name
 
 Resources:
   HttpApiLambdaFunction:
@@ -47,7 +47,7 @@ Resources:
       MemorySize: 256
       Code:
         S3Bucket: !Ref LambdaCodeBucket
-        S3Key: !Ref LambdaCodeKey
+        S3Key: !Sub "lambda-zip/${LambdaZipFile}"
       Environment:
         Variables:
           SESSIONS_TABLE_NAME: !Ref SessionsTableName
