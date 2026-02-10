@@ -167,13 +167,13 @@ aws cloudformation deploy \
 **So that** session creation and presigned URL generation work
 
 **Acceptance Criteria:**
-- [ ] Structure in `lambda/http_api_handler/` matches [lambda-specification.md](./lambda-specification.md)
-- [ ] `requirements.txt` scoped to HTTP API Lambda
-- [ ] Entry point routes POST `/sessions` and GET `/upload-url`
-- [ ] Handlers implemented: `create_session.py`, `generate_presigned_url.py`
-- [ ] Utilities implemented: `dynamodb.py`, `response.py`
-- [ ] Build/package output for HTTP API Lambda ZIP
-- [ ] Deployed via CloudFormation
+- [x] Structure in `lambda/http_api_handler/` matches [lambda-specification.md](./lambda-specification.md)
+- [x] `requirements.txt` scoped to HTTP API Lambda
+- [x] Entry point routes POST `/sessions` and GET `/upload-url`
+- [x] Handlers implemented: `create_session.py`, `generate_presigned_url.py`
+- [x] Utilities implemented: `dynamodb.py`, `response.py`
+- [x] Build/package output for HTTP API Lambda ZIP
+- [x] Deployed via CloudFormation
 
 ---
 
