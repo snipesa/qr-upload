@@ -9,10 +9,10 @@ This document provides step-by-step instructions for manually creating and confi
 ## Prerequisites
 
 Before setting up API Gateway, ensure:
-- [ ] CloudFormation stack deployed with Lambda functions
-- [ ] Lambda function ARNs available
-- [ ] DynamoDB sessions table created
-- [ ] You have necessary IAM permissions to create API Gateway resources
+- [x] CloudFormation stack deployed with Lambda functions
+- [x] Lambda function ARNs available
+- [x] DynamoDB sessions table created
+- [x] You have necessary IAM permissions to create API Gateway resources
 
 ---
 
@@ -39,16 +39,16 @@ Handles synchronous request-response operations:
    - **Auto-deploy**: Enabled
 8. Click **Next** → **Create**
 
-### Step 2: Create Lambda Integrations
+### Step 2: Create Lambda Integration
 
-#### Integration 1: Create Session Handler
+Since both routes use the same Lambda function (with internal routing), we only need **one integration**:
 
 1. In the API details page, click **Integrations** in left sidebar
 2. Click **Create**
 3. Configure integration:
    - **Integration type**: Lambda function
    - **Integration target**: Select `qr-upload-http-api-{environment}` Lambda
-   - **Integration name**: `create-session-integration`
+   - **Integration name**: `http-api-lambda-integration`
    - **Payload format version**: `2.0` (default for HTTP API)
 4. Click **Create**
 5. Grant API Gateway permission to invoke Lambda:
@@ -57,21 +57,11 @@ Handles synchronous request-response operations:
    ```bash
    aws lambda add-permission \
      --function-name qr-upload-http-api-dev \
-     --statement-id apigateway-http-create-session \
+     --statement-id apigateway-http-invoke \
      --action lambda:InvokeFunction \
      --principal apigateway.amazonaws.com \
-     --source-arn "arn:aws:execute-api:{region}:{account-id}:{api-id}/*/*/sessions"
+     --source-arn "arn:aws:execute-api:{region}:{account-id}:{api-id}/*/*"
    ```
-
-#### Integration 2: Presigned URL Handler
-
-1. Click **Create** again under Integrations
-2. Configure integration:
-   - **Integration type**: Lambda function
-   - **Integration target**: Select `qr-upload-http-api-{environment}` Lambda (same function)
-   - **Integration name**: `presigned-url-integration`
-   - **Payload format version**: `2.0`
-3. Click **Create**
 
 ### Step 3: Create Routes
 
@@ -85,7 +75,7 @@ Handles synchronous request-response operations:
 4. Click **Create**
 5. Attach integration:
    - Click on the newly created route
-   - Under **Integration**, select `create-session-integration`
+   - Under **Integration**, select `http-api-lambda-integration`
    - Click **Attach integration**
 
 #### Route 2: GET /upload-url
@@ -97,7 +87,7 @@ Handles synchronous request-response operations:
 3. Click **Create**
 4. Attach integration:
    - Click on the route
-   - Under **Integration**, select `presigned-url-integration`
+   - Under **Integration**, select `http-api-lambda-integration`
    - Click **Attach integration**
 
 ### Step 4: Configure CORS
@@ -265,11 +255,14 @@ The WebSocket event handler Lambda needs to know the API Gateway endpoint to sen
 2. Open `qr-upload-websocket-event-{environment}` function
 3. Go to **Configuration** → **Environment variables**
 4. Add/Update variable:
-   - **Key**: `WEBSOCKET_API_ENDPOINT`
-   - **Value**: `https://{api-id}.execute-api.{region}.amazonaws.com/production`
+   - **Key**: `WS_API_ENDPOINT`
+   - **Value**: `{api-id}.execute-api.{region}.amazonaws.com/production`
 5. Click **Save**
 
-**Note**: The endpoint for the API Gateway Management API uses `https://` not `wss://`
+**Important Notes**:
+- The endpoint format is the domain + stage path (no `https://` or `wss://` prefix)
+- The Lambda code constructs the full `https://` URL internally for the Management API
+- Example value: `abc123def.execute-api.us-east-1.amazonaws.com/production`
 
 ### WebSocket API Routes Summary
 
@@ -482,7 +475,7 @@ Although API Gateway is created manually, document the outputs for reference:
 ### WebSocket API Outputs
 - **API ID**: `{api-id}`
 - **WebSocket URL**: `wss://{api-id}.execute-api.{region}.amazonaws.com/production`
-- **Management API Endpoint**: `https://{api-id}.execute-api.{region}.amazonaws.com/production`
+- **Management API Endpoint** (for WS_API_ENDPOINT): `{api-id}.execute-api.{region}.amazonaws.com/production`
 
 ### Add to Website Configuration
 

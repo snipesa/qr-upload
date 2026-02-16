@@ -26,9 +26,9 @@ def lambda_handler(event, context):
         logger.info(f"HTTP {http_method} {path}")
         
         # Route to appropriate handler
-        if http_method == 'POST' and path == '/sessions':
+        if http_method == 'POST' and path == '/dev/sessions':
             return create_session.handle(event)
-        elif http_method == 'GET' and path == '/upload-url':
+        elif http_method == 'GET' and path == '/dev/upload-url':
             return generate_presigned_url.handle(event)
         else:
             logger.warning(f"Route not found: {http_method} {path}")
