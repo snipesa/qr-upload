@@ -35,6 +35,11 @@ Parameters:
     Default: /qr-upload/websocket-event-handler/lambda-zip
     Description: SSM parameter name containing Lambda zip file name
 
+  WsApiEndpoint:
+    Type: String
+    Default: "r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production"
+    Description: WebSocket API endpoint (format api-id.execute-api.region.amazonaws.com/stage) - leave empty until API Gateway is created
+
 Resources:
   WebSocketEventLambdaFunction:
     Type: AWS::Lambda::Function
@@ -52,6 +57,7 @@ Resources:
         Variables:
           SESSIONS_TABLE_NAME: !Ref SessionsTableName
           UPLOAD_BUCKET_NAME: !Ref UploadsBucketName
+          WS_API_ENDPOINT: !Ref WsApiEndpoint
       Description: WebSocket and S3 event handler for QR upload
 
   WebSocketEventLambdaLogGroup:

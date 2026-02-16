@@ -221,18 +221,7 @@ After creating the API, configure integrations for each route:
      --source-arn "arn:aws:execute-api:{region}:{account-id}:{api-id}/*/$disconnect"
    ```
 
-### Step 4: Configure Authorization (Query Parameter Validation)
-
-WebSocket connections should include `sessionId` as a query parameter for validation:
-
-1. Click on **$connect** route
-2. Under **Route Request**, configure:
-   - Query string parameters: `sessionId` (required)
-3. Lambda function will validate sessionId exists in DynamoDB
-
-**Note**: API Gateway doesn't have built-in query parameter validation for WebSocket. The Lambda function handles validation and returns `401` status code if invalid.
-
-### Step 5: Deploy WebSocket API
+### Step 4: Deploy WebSocket API
 
 1. Click **Stages** in left sidebar
 2. Click **Create**
@@ -241,28 +230,40 @@ WebSocket connections should include `sessionId` as a query parameter for valida
    - **Description**: `Production stage for WebSocket API`
 4. Click **Deploy**
 
-### Step 6: Get WebSocket Endpoint
+### Step 5: Get WebSocket Endpoint
 
 1. In **Stages** → `production`
 2. Copy the **WebSocket URL**: `wss://{api-id}.execute-api.{region}.amazonaws.com/production`
 3. This is your WebSocket API URL for the website configuration
 
-### Step 7: Update Lambda Environment Variable
+### Step 6: Update CloudFormation Stack with WebSocket Endpoint
 
-The WebSocket event handler Lambda needs to know the API Gateway endpoint to send messages:
+The WebSocket event handler Lambda needs the API Gateway endpoint to send messages. Update the CloudFormation stack:
 
-1. Navigate to **Lambda** in AWS Console
-2. Open `qr-upload-websocket-event-{environment}` function
-3. Go to **Configuration** → **Environment variables**
-4. Add/Update variable:
-   - **Key**: `WS_API_ENDPOINT`
-   - **Value**: `{api-id}.execute-api.{region}.amazonaws.com/production`
-5. Click **Save**
+**Option 1: Update via AWS Console**
+1. Navigate to **CloudFormation** in AWS Console
+2. Select the `qr-upload-dev` stack
+3. Click **Update** → **Use current template** → **Next**
+4. Update the parameter:
+   - **WsApiEndpoint**: `{api-id}.execute-api.{region}.amazonaws.com/production`
+   - Example: `r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production`
+5. Click through **Next** → **Submit**
+
+**Option 2: Update via deployment script**
+```bash
+cd infra
+# Edit deploy-main-stack.sh to accept parameter overrides, or update the parameter default in qr-upload-stack.yaml
+```
 
 **Important Notes**:
-- The endpoint format is the domain + stage path (no `https://` or `wss://` prefix)
-- The Lambda code constructs the full `https://` URL internally for the Management API
-- Example value: `abc123def.execute-api.us-east-1.amazonaws.com/production`
+- The endpoint format is `{api-id}.execute-api.{region}.amazonaws.com/production` (no `https://` or `wss://` prefix, **no trailing slash**)
+- The Lambda code constructs the full `https://` URL internally: `https://r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production`
+- This is required for the Lambda to send WebSocket messages to connected clients
+
+**About the @connections URL:**
+- Your WebSocket URL: `wss://r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production/`
+- The Management API endpoint: `https://r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production/@connections`
+- The boto3 SDK automatically appends `/@connections` when calling `post_to_connection()`, so you only provide: `r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production`
 
 ### WebSocket API Routes Summary
 
