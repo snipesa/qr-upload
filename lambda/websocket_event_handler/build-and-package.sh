@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# Build and package HTTP API Lambda function
-echo "Building HTTP API Lambda function..."
+# Build and package WebSocket Event Handler Lambda function
+echo "Building WebSocket Event Handler Lambda function..."
 
 # Create temp build directory
 BUILD_DIR="build"
@@ -23,7 +23,7 @@ fi
 
 # Create deployment package
 echo "Creating deployment package..."
-ZIP_BASENAME="http-api-handler"
+ZIP_BASENAME="websocket-event-handler"
 ZIP_TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 ZIP_FILENAME="${ZIP_BASENAME}-${ZIP_TIMESTAMP}.zip"
 cd "$BUILD_DIR"
@@ -32,8 +32,8 @@ cd ..
 
 # Upload to S3 and update SSM parameter
 S3_BUCKET="cf-templates--1tlzie64y9rw-us-east-1"
-S3_PREFIX="lambda-zip/http-api-handler"
-SSM_PARAM_NAME="/qr-upload/http-api-handler/lambda-zip"
+S3_PREFIX="lambda-zip/websocket-event-handler"
+SSM_PARAM_NAME="/qr-upload/websocket-event-handler/lambda-zip"
 
 echo "Uploading ${ZIP_FILENAME} to s3://${S3_BUCKET}/${S3_PREFIX}/"
 aws s3 cp "${ZIP_FILENAME}" "s3://${S3_BUCKET}/${S3_PREFIX}/${ZIP_FILENAME}"

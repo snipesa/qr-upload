@@ -41,6 +41,19 @@ Resources:
         UploadsBucketName: !GetAtt InfraAssetsStack.Outputs.UploadsBucketName
         LambdaCodeBucket: !Ref LambdaCodeBucket
 
+  WebSocketEventLambdaStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: InfraAssetsStack
+    Properties:
+      TemplateURL: https://cf-templates--1tlzie64y9rw-us-east-1.s3.us-east-1.amazonaws.com/qr-upload/qr-lambda-websocket-event.yaml
+      Parameters:
+        Environment: !Ref Environment
+        ProjectName: !Ref ProjectName
+        WebSocketEventLambdaRoleArn: !GetAtt InfraAssetsStack.Outputs.WebSocketEventLambdaRoleArn
+        SessionsTableName: !GetAtt InfraAssetsStack.Outputs.SessionsTableName
+        UploadsBucketName: !GetAtt InfraAssetsStack.Outputs.UploadsBucketName
+        LambdaCodeBucket: !Ref LambdaCodeBucket
+
 Outputs:
   WebsiteBucketName:
     Description: Website hosting bucket name
@@ -73,3 +86,11 @@ Outputs:
   HttpApiLambdaFunctionName:
     Description: Name of the HTTP API Lambda function
     Value: !GetAtt HttpApiLambdaStack.Outputs.HttpApiLambdaFunctionName
+
+  WebSocketEventLambdaFunctionArn:
+    Description: ARN of the WebSocket Event Lambda function
+    Value: !GetAtt WebSocketEventLambdaStack.Outputs.WebSocketEventLambdaFunctionArn
+
+  WebSocketEventLambdaFunctionName:
+    Description: Name of the WebSocket Event Lambda function
+    Value: !GetAtt WebSocketEventLambdaStack.Outputs.WebSocketEventLambdaFunctionName

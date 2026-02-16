@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: QR Upload HTTP API Lambda Function
+Description: QR Upload WebSocket Event Handler Lambda Function
 
 Parameters:
   Environment:
@@ -14,9 +14,9 @@ Parameters:
     Default: qr-upload
     Description: Project name for resource naming
 
-  HttpApiLambdaRoleArn:
+  WebSocketEventLambdaRoleArn:
     Type: String
-    Description: ARN of the HTTP API Lambda execution role
+    Description: ARN of the WebSocket/Event Lambda execution role
 
   SessionsTableName:
     Type: String
@@ -32,39 +32,39 @@ Parameters:
 
   LambdaZipFile:
     Type: AWS::SSM::Parameter::Value<String>
-    Default: /qr-upload/http-api-handler/lambda-zip
+    Default: /qr-upload/websocket-event-handler/lambda-zip
     Description: SSM parameter name containing Lambda zip file name
 
 Resources:
-  HttpApiLambdaFunction:
+  WebSocketEventLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub "${ProjectName}-http-api-${Environment}"
+      FunctionName: !Sub "${ProjectName}-websocket-event-${Environment}"
       Runtime: python3.12
       Handler: lambda_function.lambda_handler
-      Role: !Ref HttpApiLambdaRoleArn
+      Role: !Ref WebSocketEventLambdaRoleArn
       Timeout: 30
       MemorySize: 256
       Code:
         S3Bucket: !Ref LambdaCodeBucket
-        S3Key: !Sub "lambda-zip/http-api-handler/${LambdaZipFile}"
+        S3Key: !Sub "lambda-zip/websocket-event-handler/${LambdaZipFile}"
       Environment:
         Variables:
           SESSIONS_TABLE_NAME: !Ref SessionsTableName
           UPLOAD_BUCKET_NAME: !Ref UploadsBucketName
-      Description: HTTP API handler for QR upload sessions and presigned URLs
+      Description: WebSocket and S3 event handler for QR upload
 
-  HttpApiLambdaLogGroup:
+  WebSocketEventLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${HttpApiLambdaFunction}"
+      LogGroupName: !Sub "/aws/lambda/${WebSocketEventLambdaFunction}"
       RetentionInDays: 7
 
 Outputs:
-  HttpApiLambdaFunctionArn:
-    Description: ARN of the HTTP API Lambda function
-    Value: !GetAtt HttpApiLambdaFunction.Arn
+  WebSocketEventLambdaFunctionArn:
+    Description: ARN of the WebSocket Event Lambda function
+    Value: !GetAtt WebSocketEventLambdaFunction.Arn
 
-  HttpApiLambdaFunctionName:
-    Description: Name of the HTTP API Lambda function
-    Value: !Ref HttpApiLambdaFunction
+  WebSocketEventLambdaFunctionName:
+    Description: Name of the WebSocket Event Lambda function
+    Value: !Ref WebSocketEventLambdaFunction
