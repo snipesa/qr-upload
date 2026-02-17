@@ -24,6 +24,11 @@ Parameters:
     Default: "r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production"
     Description: WebSocket API endpoint (format api-id.execute-api.region.amazonaws.com/stage) - Update after creating WebSocket API Gateway
 
+  WebSocketEventLambdaFunctionArn:
+    Type: String
+    Default: "arn:aws:lambda:us-east-1:905418207079:function:qr-upload-websocket-event-dev"
+    Description: Websocket event lambda arn to be used by the uploads s3 buckets
+
 Resources:
   InfraAssetsStack:
     Type: AWS::CloudFormation::Stack
@@ -32,6 +37,7 @@ Resources:
       Parameters:
         Environment: !Ref Environment
         ProjectName: !Ref ProjectName
+        UploadEventLambdaArn: !Ref WebSocketEventLambdaFunctionArn
 
   HttpApiLambdaStack:
     Type: AWS::CloudFormation::Stack
@@ -85,17 +91,9 @@ Outputs:
     Description: ARN of WebSocket/Event Lambda execution role
     Value: !GetAtt InfraAssetsStack.Outputs.WebSocketEventLambdaRoleArn
 
-  HttpApiLambdaFunctionArn:
-    Description: ARN of the HTTP API Lambda function
-    Value: !GetAtt HttpApiLambdaStack.Outputs.HttpApiLambdaFunctionArn
-
   HttpApiLambdaFunctionName:
     Description: Name of the HTTP API Lambda function
     Value: !GetAtt HttpApiLambdaStack.Outputs.HttpApiLambdaFunctionName
-
-  WebSocketEventLambdaFunctionArn:
-    Description: ARN of the WebSocket Event Lambda function
-    Value: !GetAtt WebSocketEventLambdaStack.Outputs.WebSocketEventLambdaFunctionArn
 
   WebSocketEventLambdaFunctionName:
     Description: Name of the WebSocket Event Lambda function

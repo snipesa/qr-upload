@@ -83,17 +83,17 @@ Resources:
           - Id: DeleteOldUploads
             Status: Enabled
             ExpirationInDays: 30
-      # NotificationConfiguration: !If
-      #   - HasUploadEventLambdaArn
-      #   - LambdaConfigurations:
-      #       - Event: s3:ObjectCreated:*
-      #         Function: !Ref UploadEventLambdaArn
-      #         Filter:
-      #           S3Key:
-      #             Rules:
-      #               - Name: prefix
-      #                 Value: session-uploads/
-      #   - !Ref AWS::NoValue
+      NotificationConfiguration: !If
+        - HasUploadEventLambdaArn
+        - LambdaConfigurations:
+            - Event: s3:ObjectCreated:*
+              Function: !Ref UploadEventLambdaArn
+              Filter:
+                S3Key:
+                  Rules:
+                    - Name: prefix
+                      Value: session-uploads/
+        - !Ref AWS::NoValue
 
   UploadsBucketInvokePermission:
     Type: AWS::Lambda::Permission
