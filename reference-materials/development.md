@@ -185,13 +185,13 @@ aws cloudformation deploy \
 **So that** WebSocket lifecycle and S3 upload events are handled
 
 **Acceptance Criteria:**
-- [ ] Structure in `lambda/websocket_event_handler/` matches [lambda-specification.md](./lambda-specification.md)
-- [ ] `requirements.txt` scoped to WebSocket/Event Lambda
-- [ ] Entry point routes `$connect`, `$disconnect`, and S3 `ObjectCreated` events
-- [ ] Handlers implemented: `websocket_connect.py`, `websocket_disconnect.py`, `s3_upload_completion.py`
-- [ ] Utilities implemented: `dynamodb.py`, `websocket.py`, `response.py`
-- [ ] Build/package output for WebSocket/Event Lambda ZIP
-- [ ] Deployed via CloudFormation with WebSocket and S3 triggers wired
+- [x] Structure in `lambda/websocket_event_handler/` matches [lambda-specification.md](./lambda-specification.md)
+- [x] `requirements.txt` scoped to WebSocket/Event Lambda
+- [x] Entry point routes `$connect`, `$disconnect`, and S3 `ObjectCreated` events
+- [x] Handlers implemented: `websocket_connect.py`, `websocket_disconnect.py`, `s3_upload_completion.py`
+- [x] Utilities implemented: `dynamodb.py`, `websocket.py`, `response.py`
+- [x] Build/package output for WebSocket/Event Lambda ZIP
+- [x] Deployed via CloudFormation with WebSocket and S3 triggers wired
 
 ---
 
@@ -203,13 +203,13 @@ aws cloudformation deploy \
 **So that** the API can be set up manually in the console
 
 **Acceptance Criteria:**
-- [ ] Documentation file: `reference-materials/api-gateway.md`
-- [ ] HTTP API section with step-by-step console instructions
-- [ ] Endpoint definitions: POST `/sessions`, GET `/upload-url`
-- [ ] Lambda integration configuration for each route
-- [ ] CORS configuration
-- [ ] Stage deployment (e.g., `production`)
-- [ ] API URL format and example
+- [x] Documentation file: `reference-materials/api-gateway.md`
+- [x] HTTP API section with step-by-step console instructions
+- [x] Endpoint definitions: POST `/sessions`, GET `/upload-url`
+- [x] Lambda integration configuration for each route
+- [x] CORS configuration
+- [x] Stage deployment (e.g., `production`)
+- [x] API URL format and example
 
 **Documentation:**
 See [api-gateway.md](./api-gateway.md) - HTTP API Configuration

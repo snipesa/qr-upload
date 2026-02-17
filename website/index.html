@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR Upload</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <header class="card__header">
+          <p class="eyebrow">QR Upload</p>
+          <h1>Share a photo in one scan.</h1>
+          <p class="subhead" id="info-message"></p>
+        </header>
+
+        <div class="view view--active" data-view="initial" id="view-initial">
+          <p class="body">Start a new session and scan the QR code from your phone to upload.</p>
+          <button class="btn btn--primary" id="start-upload">Start Upload</button>
+        </div>
+
+        <div class="view" data-view="loading" id="view-loading">
+          <div class="spinner" aria-label="Loading"></div>
+          <p class="body">Creating a new session…</p>
+        </div>
+
+        <div class="view" data-view="qr" id="view-qr">
+          <div class="qr-wrapper">
+            <div id="qr-code" class="qr-code"></div>
+            <div>
+              <p class="body">Scan this QR code with your phone to upload.</p>
+              <p class="meta">Session: <span id="session-id"></span></p>
+              <p class="meta">
+                Upload link: <span id="upload-url" class="mono"></span>
+              </p>
+            </div>
+          </div>
+          <div class="button-row">
+            <button class="btn" id="cancel-upload">Cancel</button>
+          </div>
+        </div>
+
+        <div class="view" data-view="success" id="view-success">
+          <div class="status status--success">Upload complete</div>
+          <p class="body" id="success-details"></p>
+          <button class="btn btn--primary" id="new-upload">Start New Upload</button>
+        </div>
+
+        <div class="view" data-view="error" id="view-error">
+          <div class="status status--error">Something went wrong</div>
+          <p class="body" id="error-message"></p>
+          <div class="button-row">
+            <button class="btn btn--primary" id="retry-upload">Try Again</button>
+            <button class="btn" id="reset-upload">Back</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <noscript>Please enable JavaScript to use this site.</noscript>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="js/qr-generator.js"></script>
+    <script src="js/websocket-client.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
