@@ -59,6 +59,15 @@ Resources:
             Action: s3:GetObject
             Resource: !Sub "${WebsiteBucket.Arn}/*"
 
+  UploadsBucketInvokePermission:
+    Type: AWS::Lambda::Permission
+    Condition: HasUploadEventLambdaArn
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref UploadEventLambdaArn
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub "arn:aws:s3:::${ProjectName}-uploads-${Environment}"
+
   UploadsBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -94,15 +103,6 @@ Resources:
                     - Name: prefix
                       Value: session-uploads/
         - !Ref AWS::NoValue
-
-  UploadsBucketInvokePermission:
-    Type: AWS::Lambda::Permission
-    Condition: HasUploadEventLambdaArn
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref UploadEventLambdaArn
-      Principal: s3.amazonaws.com
-      SourceArn: !GetAtt UploadsBucket.Arn
 
   SessionsTable:
     Type: AWS::DynamoDB::Table
