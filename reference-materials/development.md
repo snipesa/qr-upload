@@ -222,14 +222,14 @@ See [api-gateway.md](./api-gateway.md) - HTTP API Configuration
 **So that** real-time notifications can be sent to the web app
 
 **Acceptance Criteria:**
-- [ ] Documentation file updated: `reference-materials/api-gateway.md`
-- [ ] WebSocket API section with console instructions
-- [ ] Route definitions: `$connect`, `$disconnect`, `$default` (optional)
-- [ ] Lambda integration for each route
-- [ ] Authorization configuration (query parameter: sessionId)
-- [ ] Stage deployment (e.g., `production`)
-- [ ] WebSocket URL format and example
-- [ ] Connection lifecycle explanation
+- [x] Documentation file updated: `reference-materials/api-gateway.md`
+- [x] WebSocket API section with console instructions
+- [x] Route definitions: `$connect`, `$disconnect`, `$default` (optional)
+- [x] Lambda integration for each route
+- [x] Authorization configuration (query parameter: sessionId)
+- [x] Stage deployment (e.g., `production`)
+- [x] WebSocket URL format and example
+- [x] Connection lifecycle explanation
 
 **Documentation:**
 See [api-gateway.md](./api-gateway.md) - WebSocket API Configuration
@@ -244,13 +244,13 @@ See [api-gateway.md](./api-gateway.md) - WebSocket API Configuration
 **So that** users can upload via QR and receive real-time updates
 
 **Acceptance Criteria:**
-- [ ] Basic HTML/CSS/JS in `website/` (no focus on styling)
-- [ ] HTTP API integration for `POST /sessions` and `GET /upload-url`
-- [ ] QR code generation for the upload link
-- [ ] WebSocket client connects with `sessionId` and handles upload-complete message
-- [ ] S3 static site hosting only (no CloudFront)
-- [ ] Single environment: `dev`
-- [ ] Simple deploy script or documented steps to sync to the S3 bucket
+- [x] Basic HTML/CSS/JS in `website/` (no focus on styling)
+- [x] HTTP API integration for `POST /sessions` and `GET /upload-url`
+- [x] QR code generation for the upload link
+- [x] WebSocket client connects with `sessionId` and handles upload-complete message
+- [x] S3 static site hosting only (no CloudFront)
+- [x] Single environment: `dev`
+- [x] Simple deploy script or documented steps to sync to the S3 bucket
 
 **Documentation:**
 See [website-specification.md](./website-specification.md) for implementation details
@@ -263,12 +263,12 @@ See [website-specification.md](./website-specification.md) for implementation de
 **So that** scanning the QR code on a phone completes the upload flow
 
 **Acceptance Criteria:**
-- [ ] New mobile upload page in `website/` that accepts `sessionId` via query string
-- [ ] Page calls `GET /upload-url?sessionId=...` to retrieve `uploadUrl` and `uploadKey`
-- [ ] Page presents a file picker and uploads the selected image using a `PUT` to `uploadUrl`
-- [ ] Upload progress and error states are visible on the phone
-- [ ] Success state displayed after upload completes (and S3 event triggers WebSocket update)
-- [ ] QR code on the desktop site points to `/uploads/` on the website, not the raw JSON endpoint
+- [x] New mobile upload page in `website/` that accepts `sessionId` via query string
+- [x] Page calls `GET /upload-url?sessionId=...` to retrieve `uploadUrl` and `uploadKey`
+- [x] Page presents a file picker and uploads the selected image using a `PUT` to `uploadUrl`
+- [x] Upload progress and error states are visible on the phone
+- [x] Success state displayed after upload completes (and S3 event triggers WebSocket update)
+- [x] QR code on the desktop site points to `/uploads/` on the website, not the raw JSON endpoint
 
 **Documentation:**
 See [mobile-upload.md](./mobile-upload.md) for flow and UI details
