@@ -10,8 +10,8 @@
   class QRUploadApp {
     constructor() {
       this.config = {
-        httpApiUrl: "https://YOUR_HTTP_API_ID.execute-api.REGION.amazonaws.com",
-        wsApiUrl: "wss://YOUR_WS_API_ID.execute-api.REGION.amazonaws.com/production",
+        httpApiUrl: "https://3rdlx5nks0.execute-api.us-east-1.amazonaws.com/dev",
+        wsApiUrl: "wss://r0k1fs92k5.execute-api.us-east-1.amazonaws.com/production",
         ...(window.QR_UPLOAD_CONFIG || {}),
       };
 
