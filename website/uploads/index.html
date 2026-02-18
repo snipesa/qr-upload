@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR Upload - Mobile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <header class="card__header">
+          <p class="eyebrow">QR Upload</p>
+          <h1>Upload from your phone.</h1>
+          <p class="subhead">Select an image and we'll handle the rest.</p>
+          <p class="meta">Session: <span id="session-id"></span></p>
+        </header>
+
+        <div class="view view--active" data-view="loading">
+          <div class="spinner" aria-label="Loading"></div>
+          <p class="body">Preparing your upload…</p>
+        </div>
+
+        <div class="view" data-view="ready">
+          <p class="body">Choose a photo to upload.</p>
+          <input
+            class="file-input"
+            type="file"
+            id="file-input"
+            accept="image/*"
+            capture="environment"
+          />
+          <p class="meta" id="file-name"></p>
+          <div class="button-row">
+            <button class="btn btn--primary" id="upload-button" disabled>Upload</button>
+          </div>
+        </div>
+
+        <div class="view" data-view="uploading">
+          <div class="spinner" aria-label="Uploading"></div>
+          <p class="body">Uploading your image…</p>
+        </div>
+
+        <div class="view" data-view="success">
+          <div class="status status--success">Upload complete</div>
+          <p class="body" id="success-details"></p>
+        </div>
+
+        <div class="view" data-view="error">
+          <div class="status status--error">Upload failed</div>
+          <p class="body" id="error-message"></p>
+          <div class="button-row">
+            <button class="btn btn--primary" id="retry-upload">Try Again</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <noscript>Please enable JavaScript to use this site.</noscript>
+
+    <script src="../js/mobile-upload.js"></script>
+  </body>
+</html>

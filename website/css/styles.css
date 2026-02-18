@@ -139,6 +139,18 @@ h1 {
   border-color: var(--accent-dark);
 }
 
+.file-input {
+  width: 100%;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
 .status {
   display: inline-flex;
   align-items: center;

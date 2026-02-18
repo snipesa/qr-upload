@@ -69,9 +69,8 @@
       try {
         const session = await this.createSession();
         this.state.sessionId = session.sessionId;
-        const uploadUrl = `${this.config.httpApiUrl}/upload-url?sessionId=${encodeURIComponent(
-          session.sessionId
-        )}`;
+        const siteUrl = this.config.websiteUrl || window.location.origin;
+        const uploadUrl = `${siteUrl}/uploads/?sessionId=${encodeURIComponent(session.sessionId)}`;
 
         this.elements.sessionId.textContent = session.sessionId;
         this.elements.uploadUrl.textContent = uploadUrl;

@@ -257,6 +257,24 @@ See [website-specification.md](./website-specification.md) for implementation de
 
 ---
 
+#### Story 5.1: Mobile Upload Page (Phone Flow)
+**As a** frontend developer  
+**I want** a mobile upload page that accepts a sessionId and performs the upload  
+**So that** scanning the QR code on a phone completes the upload flow
+
+**Acceptance Criteria:**
+- [ ] New mobile upload page in `website/` that accepts `sessionId` via query string
+- [ ] Page calls `GET /upload-url?sessionId=...` to retrieve `uploadUrl` and `uploadKey`
+- [ ] Page presents a file picker and uploads the selected image using a `PUT` to `uploadUrl`
+- [ ] Upload progress and error states are visible on the phone
+- [ ] Success state displayed after upload completes (and S3 event triggers WebSocket update)
+- [ ] QR code on the desktop site points to `/uploads/` on the website, not the raw JSON endpoint
+
+**Documentation:**
+See [mobile-upload.md](./mobile-upload.md) for flow and UI details
+
+---
+
 ### Epic 6: Documentation & Deployment
 
 #### Story 6.1: Create Root README with Deployment Commands
